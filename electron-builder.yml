@@ -1,0 +1,86 @@
+appId: io.github.thesanketkale.electron-foundation
+productName: Electron Foundation
+copyright: Copyright © 2026 Sanket Kale
+
+directories:
+  output: dist
+  buildResources: build
+
+files:
+  - out/**/*
+  - package.json
+  - node_modules/**/*
+  - '!node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}'
+  - '!node_modules/*/{test,__tests__,tests,powertests,docs,example,examples}'
+  - '!node_modules/**/*.d.ts'
+  - '!node_modules/**/*.map'
+
+asar: true
+asarUnpack:
+  - '**/*.node'
+
+# Windows Configuration (NSIS)
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: zip
+      arch:
+        - x64
+  executableName: Electron Foundation
+  signAndEditExecutable: true
+  # Pluggable signing: Azure Trusted Signing or PFX via CSC_LINK
+  sign: scripts/windows-sign.js
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Electron Foundation
+  uninstallDisplayName: Electron Foundation
+
+# macOS Configuration (DMG & ZIP for auto-updater)
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  category: public.app-category.developer-tools
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  notarize:
+    teamId: ${env.APPLE_TEAM_ID}
+
+dmg:
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+# Linux Configuration (AppImage)
+linux:
+  target:
+    - target: AppImage
+      arch:
+        - x64
+  category: Development
+
+# Auto-update publish provider (Public GitHub Releases)
+publish:
+  provider: github
+  owner: thesanketkale
+  repo: electron-foundation
+  releaseType: release
