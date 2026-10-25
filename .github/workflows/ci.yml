@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions: {}
+
+jobs:
+  lint-and-test:
+    name: Lint & Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832e0b1 # v4.0.3
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libxss1 libnss3 libasound2 libatk-bridge2.0-0 libgtk-3-0
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run code formatting check
+        run: npm run format:check
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript typecheck
+        run: npm run typecheck
+
+      - name: Run Unit Tests
+        run: npm test
+
+      - name: Build application bundles
+        run: npm run build
+
+      - name: Run Playwright E2E Tests (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run --auto-servernum -- npm run test:e2e
+
+      - name: Run Playwright E2E Tests (Windows / macOS)
+        if: runner.os != 'Linux'
+        run: npm run test:e2e
+
+      - name: Package application (Unpacked)
+        run: npm run package
+
+      - name: Verify Electron Fuses
+        run: npm run fuses:verify
+
+      - name: Build distribution packages (Unsigned)
+        run: npm run package:dist
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        with:
+          name: installers-${{ matrix.os }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.AppImage
+          if-no-files-found: warn
+          retention-days: 7

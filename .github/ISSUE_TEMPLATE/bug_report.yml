@@ -1,0 +1,48 @@
+name: Bug Report
+description: Create a report to help us improve electron-foundation.
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: os
+    attributes:
+      label: Operating System & Architecture
+      description: What OS are you running? (e.g., Windows 11 x64, macOS Sonoma arm64, Ubuntu 24.04 x64)
+      placeholder: Windows 11 x64
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Application / Foundation Version
+      placeholder: v0.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Run 'npm run dev'
+        2. Navigate to '...'
+        3. Click on '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs or Error Output
+      description: Please copy and paste any relevant logs from the diagnostics export or terminal console.
+      render: shell
