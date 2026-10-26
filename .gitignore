@@ -62,5 +62,6 @@ blob-report
 *.cer
 *.crt
 
-# Agent pipeline scratchpads (excluded from public releases)
+# Agent pipeline scratchpads and local settings
 .pipeline/
+.claude/settings.local.json

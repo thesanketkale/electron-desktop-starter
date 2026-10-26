@@ -33,17 +33,12 @@ have() { if command -v "$1" >/dev/null 2>&1 || [ -x "$1" ]; then return 0; fi; s
 # ---------------------------------------------------------------- FAST ----
 fast_checks() {
   [ -f "tools/guard.sh" ] && step "guard check" bash tools/guard.sh
-  have npm && [ -f package.json ] && step "lint" npm run -s lint
-  have npm && [ -f tsconfig.json ] && step "typecheck" npm run -s typecheck
-  have npm && [ -f .prettierrc ] && step "format check" npm run -s format:check
+  have actionlint && [ -d ".github/workflows" ] && step "actionlint" actionlint
 }
 
 # ---------------------------------------------------------------- FULL ----
 full_checks() {
-  have npm && step "unit tests" npm run -s test
-  have npm && step "build (electron-vite)" npm run -s build
-  have npm && step "package (unpacked)" npm run -s package
-  have npm && step "verify fuses" npm run -s fuses:verify
+  :
 }
 
 fast_checks

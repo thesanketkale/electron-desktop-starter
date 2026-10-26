@@ -71,7 +71,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           cd dist
-          shasum -a 256 *.exe *.dmg *.zip *.AppImage *.yml > SHA256SUMS-${{ matrix.os }}.txt 2>/dev/null || true
+          shasum -a 256 ./*.exe ./*.dmg ./*.zip ./*.AppImage ./*.yml > "SHA256SUMS-${{ matrix.os }}.txt" 2>/dev/null || true
 
       - name: Generate SHA-256 Checksums (Windows)
         if: runner.os == 'Windows'
