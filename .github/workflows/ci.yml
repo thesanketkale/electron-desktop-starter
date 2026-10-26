@@ -40,7 +40,12 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb libxss1 libnss3 libasound2 libatk-bridge2.0-0 libgtk-3-0
+          sudo apt-get install -y xvfb libxss1 libnss3 libatk-bridge2.0-0 libgtk-3-0
+          if apt-cache show libasound2t64 >/dev/null 2>&1; then
+            sudo apt-get install -y libasound2t64
+          else
+            sudo apt-get install -y libasound2
+          fi
 
       - name: Install dependencies
         run: npm ci
