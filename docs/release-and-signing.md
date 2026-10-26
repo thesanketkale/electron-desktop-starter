@@ -1,6 +1,6 @@
 # Release, Code Signing & Notarization Guide
 
-This document details the code signing and automated release pipeline configured in `electron-builder.yml` and `.github/workflows/release.yml`.
+This document details the code signing and manual release process configured in `electron-builder.yml`.
 
 ## Signing Architecture
 
@@ -73,14 +73,12 @@ When signing secrets are not configured, builds succeed and generate valid insta
 
 ---
 
-## GitHub Release Pipeline
+## Release Packaging (Manual)
 
-When a tag matching `v*` (e.g., `v0.1.0`) is pushed to GitHub:
+To build release packages manually for publication:
 
-1. `.github/workflows/release.yml` triggers a parallel build matrix across `windows-latest`, `macos-latest`, and `ubuntu-latest`.
+1. Build and package the binaries locally: `npm run package:dist`.
 2. Packages NSIS installers (`.exe`), macOS DMG & ZIP, and Linux AppImage.
-3. Flips and validates all 5 Electron fuses.
-4. Generates SHA-256 checksums (`SHA256SUMS-*.txt`).
-5. Generates update manifests (`latest.yml`, `latest-mac.yml`).
-6. Attests build provenance using GitHub OIDC.
-7. Publishes all assets to the GitHub Release.
+3. Validate Electron fuses: `npm run fuses:verify`.
+4. Generate SHA-256 checksums (`SHA256SUMS-*.txt`).
+5. Upload assets and manifests to the GitHub Release manually (`gh release create`).

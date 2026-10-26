@@ -101,7 +101,7 @@ source=Notarized Developer ID
    git tag v0.1.1
    git push origin v0.1.1
    ```
-2. Wait for `.github/workflows/release.yml` to finish publishing the release.
+2. Publish the release assets with `gh release create v0.1.0`.
 3. Launch the existing local installed version (`v0.1.0`).
 4. Click **Auto-Updater** in the sidebar.
 5. Click **Check for Updates**.

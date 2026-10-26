@@ -30,12 +30,10 @@ We implement a **Pluggable, Gracefully-Degrading Signing Architecture** in `elec
 3. **macOS Developer ID & Notarization**:
    - Hardened runtime enabled (`hardenedRuntime: true`) with explicit entitlements in `build/entitlements.mac.plist`.
    - Apple notarization configured via `notarytool` utilizing App Store Connect API keys (`APPLE_API_KEY`, `APPLE_API_KEY_ID`, `APPLE_API_ISSUER`).
-4. **Automated Release Workflow (`.github/workflows/release.yml`)**:
-   - Triggered on tag pushes (`v*`).
-   - Builds artifacts across Windows, macOS, and Linux runners.
-   - Generates SHA-256 checksums file (`SHA256SUMS.txt`).
-   - Generates update manifest files (`latest.yml`, `latest-mac.yml`).
-   - Generates GitHub build provenance attestation (`actions/attest-build-provenance`).
+4. **Manual & Reproducible Release Packaging**:
+   - Release packages built on demand via `npm run package:dist`.
+   - Generates SHA-256 checksums file (`SHA256SUMS.txt`) and update manifests (`latest.yml`, `latest-mac.yml`).
+   - Published manually via GitHub CLI / web interface to avoid automated bot noise.
 
 ## Consequences
 
