@@ -19,7 +19,8 @@ test.describe('Electron Foundation Desktop Application', () => {
       args: [join(__dirname, '../../out/main/index.js')],
       env: {
         ...process.env,
-        NODE_ENV: 'production'
+        NODE_ENV: 'production',
+        ELECTRON_TEST: 'true'
       }
     })
     page = await app.firstWindow()
@@ -28,7 +29,11 @@ test.describe('Electron Foundation Desktop Application', () => {
 
   test.afterEach(async () => {
     if (app) {
-      await app.close()
+      try {
+        await app.close()
+      } catch {
+        // App may have already been closed
+      }
     }
   })
 
@@ -111,26 +116,34 @@ test.describe('Electron Foundation Desktop Application', () => {
     await page.getByRole('button', { name: /Settings & Secrets/i }).click()
     await page.getByRole('button', { name: 'Dark', exact: true }).click()
 
-    // Close app
-    await app.close()
+    // Ensure theme attribute is applied
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+
+    // Wait for the IPC settings save to complete
+    await page.waitForFunction(async () => {
+      const s = await window.api.settings.get()
+      return s.theme === 'dark'
+    })
+
+    // Close app and clear reference to avoid double-close in afterEach
+    const currentApp = app
+    app = undefined as any
+    await currentApp.close()
 
     // Restart app
     const restartedApp = await electron.launch({
       args: [join(__dirname, '../../out/main/index.js')],
       env: {
         ...process.env,
-        NODE_ENV: 'production'
+        NODE_ENV: 'production',
+        ELECTRON_TEST: 'true'
       }
     })
+    app = restartedApp
     const newPage = await restartedApp.firstWindow()
     await newPage.waitForLoadState('domcontentloaded')
 
-    // Verify dark theme is persisted
-    const themeAttr = await newPage.evaluate(() => {
-      return document.documentElement.getAttribute('data-theme')
-    })
-    expect(themeAttr).toBe('dark')
-
-    await restartedApp.close()
+    // Verify dark theme is persisted across restart (using auto-retrying locator assertion)
+    await expect(newPage.locator('html')).toHaveAttribute('data-theme', 'dark')
   })
 })

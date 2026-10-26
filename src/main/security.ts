@@ -50,7 +50,7 @@ export function setupWindowSecurity(window: BrowserWindow, isDev: boolean): void
   // Block creation of unapproved new windows/popups
   window.webContents.setWindowOpenHandler(({ url }) => {
     // Only allow safe external HTTPS links to be opened in the system browser
-    if (url.startsWith('https://')) {
+    if (url.startsWith('https://') && !process.env.CI && !process.env.ELECTRON_TEST) {
       void shell.openExternal(url)
     }
     return { action: 'deny' }
