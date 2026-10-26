@@ -48,13 +48,7 @@ export interface SettingsData {
 }
 
 export type UpdateState =
-  | 'idle'
-  | 'checking'
-  | 'available'
-  | 'not-available'
-  | 'downloading'
-  | 'downloaded'
-  | 'error'
+  'idle' | 'checking' | 'available' | 'not-available' | 'downloading' | 'downloaded' | 'error'
 
 export interface UpdateInfo {
   state: UpdateState
